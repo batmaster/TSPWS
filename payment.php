@@ -101,7 +101,8 @@
 		<table class="table">
 			<tr>
 				<td><button type="button" class="btn btn-info" id="button-back" style="width: 100%">&lt; Back to shopping</button></td>
-				<td><button type="button" class="btn btn-primary" id="button-pay" style="width: 100%">Payment &gt;</button></td>
+				<td><button type="button" class="btn btn-primary" id="button-pay" style="width: 100%">Pay with Dummybank &gt;</button></td>
+				<td><button type="button" class="btn btn-primary" id="button-kup" style="width: 100%">Pay with KUPaypal &gt;</button></td>
 			</tr>
 		</table>
 			
@@ -114,7 +115,9 @@
 	var amount = 0;
 	var totalquan = 0;
 	var totalweight = 0;
-	
+
+	var GCUS;
+	var GPRO;
 	$(document).ready(function() {
 		showAllProductsInCart();
 
@@ -125,9 +128,10 @@
 				"get_customer_detail": $.cookie("customerid")
 			}
 		}).done(function(customer_json) {
-			console.log(customer_json);
 			var customer_obj = JSON.parse(customer_json);
-			console.log(customer_obj);
+
+			GCUS = customer_obj;
+			
 			$("#firstname").val(customer_obj.firstname);
 			$("#lastname").val(customer_obj.lastname);
 			$("#address").val(customer_obj.address);
@@ -249,6 +253,7 @@
 				"get_all_product_in_cart": $.cookie("customerid")
 			}
 		}).done(function(products_json) {
+			
 			amount = 0;
 			totalquan = 0;
 			totalweight = 0;
@@ -266,12 +271,15 @@
 			");
 
 			var array = JSON.parse(products_json);
+			GPRO = array;
+			
 			for (var i = 0; i < array.length; i++) {
 
 				var productName = array[i].Product.productDescription.productName;
 				var quantity = array[i].Quantity;
 				var unitprice = array[i].Product.price;
 				var weight = array[i].Product.productDescription.weight;
+
 				var pid = array[i].Product.id;
 				
 				$("#cart").append(
@@ -303,8 +311,9 @@
 					"</tr>"
 			);
 
-		getEMSFee(totalweight,amount);
-		getDeliverFee(totalweight,amount);
+			getEMSFee(totalweight,amount);
+			getDeliverFee(totalweight,amount);
+
 		});
 	}
 
@@ -313,23 +322,93 @@
 	});
 
 	$("#button-pay").click(function() {
-		var passfee = 0; 
-		var option = $("input:radio[name=option]:checked").val();
-			if (option == 1)
-				passfee = $("#emsfee").text();
-			else if (option == 2)
-				passfee = $("#deliveryfee").text();
+// 		var passfee = 0; 
+// 		var option = $("input:radio[name=option]:checked").val();
+// 			if (option == 1)
+// 				passfee = $("#emsfee").text();
+// 			else if (option == 2)
+// 				passfee = $("#deliveryfee").text();
 		
-		if (option == undefined)
-			alert("Please choose shipping method.");
-		else {
-			var cd = $("#firstname").val() + " " + $("#lastname").val() + "**" + 
-			$("#address").val() + "**" + $("#address2").val() + "**" + 
-			$("#district").val() + "**" + $("#province").val() + "**" + 
-			$("#country").val() + "**" + $("#zip").val() + "**" + 
-			$("#phone").val();
-			post("?page=dummycredit", {fee: passfee, customer_detail: cd});
+// 		if (option == undefined)
+// 			alert("Please choose shipping method.");
+// 		else {
+// 			var cd = $("#firstname").val() + " " + $("#lastname").val() + "**" + 
+// 			$("#address").val() + "**" + $("#address2").val() + "**" + 
+// 			$("#district").val() + "**" + $("#province").val() + "**" + 
+// 			$("#country").val() + "**" + $("#zip").val() + "**" + 
+// 			$("#phone").val();
+// 			post("?page=dummycredit", {fee: passfee, customer_detail: cd});
+// 		}
+
+		// Comment get fee from Orderfulfillment need to update api.
+
+		// customer here //
+			var cu = ('{"recieve_name": "' + GCUS.firstname + " " + GCUS.lastname + '", "recieve_address": "' + GCUS.address + " " + GCUS.address2 + " " + GCUS.district + " " + GCUS.province + " " + GCUS.country + " " + GCUS.zip + " " + GCUS.phone + '", "courier_name": ' + "\"XTremeSportShopWS" + '", "courier_address": "' + "KU" + '", "type": "' + "Normal" + '", "items": ');
+		////
+			
+		cu += '{"items": ['; 
+		var pr = "";
+		for (var i = 0; i < GPRO.length; i++) {
+			// product list here //
+				pr += ('{"id": ' + GPRO[i].Product.id + ', "name": "' + GPRO[i].Product.productDescription.productName + '", "price": ' + GPRO[i].Product.price + ', "weight": ' + GPRO[i].Product.productDescription.weight + ', "quantity": ' + GPRO[i].Quantity + '},');
+			////
 		}
+		pr = pr.substring(0, pr.length-1);
+		cu += pr + ']}}';
+
+		console.log(JSON.parse(cu));
+
+		// shipment.totalcost
+	});
+
+// 	$.ajax({
+// 		url: 'http://localhost:11111/orders/' + 999,
+// 		accept: "application/json",
+// 		type: "GET"
+// 	}).done(function(data, textStatus, xhr) {
+// 		console.log(xhr);
+// 		console.log(textStatus);
+// 		console.log(data);
+// 	});
+	
+	$("#button-kup").click(function() {
+		var option = $("input:radio[name=option]:checked").val();
+		
+		$.ajax({
+			url: 'forjscallphp.php',
+			type: "POST",
+			data: { "get_cartid_by_customerid": $.cookie("customerid") }
+		}).done(function(oid) {
+			console.log("oid " + oid);
+			var js = { "payment":
+				{ "merchant_email": "batmaster_kn@yahoo.com",
+					 "order_id": oid,
+					 "amount": option == 1 ? $("#emsfee").text() : $("#deliveryfee").text(),
+					 "customer_email": "b@b.b"
+				}
+			};
+			
+			console.log(js);
+			$.ajax({
+				url: 'http://128.199.212.108:8000/payment',
+				type: "POST",
+				data: js
+				
+			}).done(function(data, textStatus, xhr) {
+				console.log(xhr.getResponseHeader("Location"));
+				var payid = xhr.getResponseHeader("Location").split("/")[xhr.getResponseHeader("Location").split("/").length-1];
+				
+				console.log("data : "+data);
+				console.log("xhr : "); console.log(xhr);
+		        if (xhr.status == 201) {
+					//document.location.href = xhr.getResponseHeader("Location") + "/accept/";
+		        }
+			});
+		});
+		
+		
+		//document.location.href = "http://158.108.36.145:8000/users/sign_in";
+
 	});
 
 	function post(path, params) {

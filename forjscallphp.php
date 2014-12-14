@@ -969,4 +969,86 @@ if (isset($_POST["is_wish"])) {
 
 }
 
+if (isset($_POST["pay"])) {
+// 	$url = 'http://158.108.36.145:8000/payment';
+//     $data = json_encode($_POST["json"]);
+//    	print_r($data);
+   	
+//    	$ch = curl_init($url);
+   	
+//     curl_setopt($ch, CURLOPT_URL, $url);
+//     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+//     curl_setopt($ch, CURLOPT_POST, 1);
+//     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//     $result = curl_exec($ch);
+//     curl_close($ch);
 
+//     echo $result;
+// // echo ($data);
+
+	
+	
+	
+	
+	
+	
+// 	$data_string = json_encode($_POST["json"]);
+// 	print_r($data_string);
+// 	$ch = curl_init('http://158.108.36.145:8000/payment');
+// 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+// 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+// 	'Content-Type: application/json',
+// 	'Content-Length: ' . strlen($data_string))
+// 	);
+	
+// 	$result = curl_exec($ch);
+// 	echo $result;
+
+	
+	
+	
+   	//{"payment":{"merchant_email":"admin@kurel.com","order_id":"69","amount":"140"}}
+	$data = array (
+			"payment" => Array(
+				"merchant_email" => "admin@kurel.com",
+				"order_id" => "99",
+				"amount" => "1200"
+			)
+	);
+	
+	$bodyData = array (
+			'json' => json_encode($data)
+	);
+	$bodyStr = http_build_query($bodyData);
+	
+	$url = 'http://158.108.36.145:8000/payment';
+	
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	'Content-Type: application/json',
+	'Content-Length: ' . strlen($data_string))
+	);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+//	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	//curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	//'Content-Type: application/json',
+//	'Content-Length: '.strlen($bodyStr)
+//	));
+//	curl_setopt($ch, CURLOPT_POST, 1);
+//	curl_setopt($ch, CURLOPT_POSTFIELDS, $bodyStr);
+	
+	
+	$result = curl_exec($ch);
+
+	echo "Curl Error :--" . curl_error($ch);
+	curl_close($ch);	
+	echo $result;
+}
