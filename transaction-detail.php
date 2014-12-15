@@ -81,43 +81,21 @@
 			}
 		});
 
-		
-		// 1 make or ordertrackingid
-		
-		$.ajax({
-			url: 'forjscallphp.php',
-			type: "POST",
-			async: false,
-			data : {
-				"is_cartid_exists": <?php echo $_GET["cartId"] ?>
-			}
-		}).done(function(response) {
-			if (response == 0) {
-				$.ajax({
-					url: 'forjscallphp.php',
-					type: "POST",
-					async: false,
-					data : {
-						"bind_cartid": "",
-						"cartId": <?php echo $_GET["cartId"] ?>
-					}
-				}).done(function(response) {
-					console.log("just added");
-				});
-			}
-		});
 
+
+
+		
 		// 2 get lastest status #ORDER_RETRIEVE
 		$.ajax({
-			url: 'forjscallphp.php',
-			type: "POST",
-			data : {
-				"get_lastest_order_status_by_cartid": <?php echo $_GET["cartId"] ?>
-			}
-		}).done(function(lasteststatus) {
-			var obj = JSON.parse(lasteststatus);
-			$("#status").text(obj[0].StatusType);
+			url: 'http://128.199.145.53:11111/orders/' + <?php echo $_GET["orderId"] ?>,
+			type: "GET"
+		}).done(function(orders_json) {
+			var order = JSON.parse(orders_json);
+			$("#status").text(order.status);
 		});
+
+
+		
 
 		$("#button-reciept").click(function() {
 			alert("Will be ok");
