@@ -6,6 +6,7 @@
 	<div class="panel-body">
 		<p>CartId = <?php echo $_GET["cartId"] ?><p>
 		<p>Status = <span id="status"></span><p>
+		<p id="pay"></p>
 	</div>
 </div>
 
@@ -51,7 +52,7 @@
 			url: 'forjscallphp.php',
 			type: 'POST',
 			data: {
-				'get_product_in_transaction': <?php echo $_GET["cartId"];?>
+				'get_product_in_transaction': 111
 			},
 			success: function(json_str2) {
 				console.log(json_str2);
@@ -78,10 +79,17 @@
 							<td></td>\
 							<td>" + total + "</td>\
 						</tr>");
-			}
+			}				
 		});
 
+		<?php 
+		if (isset($_GET["paymentId"])) {
+			echo "$(\"#pay\").html('<a href=\"http://128.199.212.108:8000/payment/{$_GET["paymentId"]}/accept\">KUPaypal</a>');";
+		}
 
+
+		?>		
+		
 
 
 		

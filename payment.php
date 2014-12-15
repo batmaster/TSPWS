@@ -540,7 +540,7 @@
 									"get_cartid_by_customerid": $.cookie("customerid")
 								}
 							}).done(function(cartid) {
-								document.location.href = "?page=transaction-detail&cartId=" + (cartid - 1) + "&orderId=" + oid;
+								document.location.href = "?page=transaction-detail&cartId=" + (cartid - 1) + "&orderId=" + oid + "&paymentId=" + payid;
 							});
 							
 				        }
