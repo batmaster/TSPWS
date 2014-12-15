@@ -85,14 +85,14 @@
 
 
 		
-		// 2 get lastest status #ORDER_RETRIEVE
-		$.ajax({
-			url: 'http://128.199.145.53:11111/orders/' + <?php echo $_GET["orderId"] ?>,
-			type: "GET"
-		}).done(function(orders_json) {
-			var order = JSON.parse(orders_json);
-			$("#status").text(order.status);
-		});
+// 		// 2 get lastest status #ORDER_RETRIEVE
+// 		$.ajax({
+//			url: 'http://128.199.145.53:11111/orders/' + <?php echo $_GET["orderId"] ?>,
+// 			type: "GET"
+// 		}).done(function(orders_json) {
+// 			var order = JSON.parse(orders_json);
+// 			$("#status").text(order.status);
+// 		});
 
 
 		
