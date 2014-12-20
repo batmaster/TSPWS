@@ -23,11 +23,11 @@
 			type: "POST",
 			data: {
 				"confirm-payment" : "",
-				"name" : $("#name").val(),
-				"number" : $("#number").val(),
-				"cvv" : $("#cvv").val(),
-				"expMonth" : $("#month").val(),
-				"expYear" : $("#year").val(),
+				"name" : "Poramate Homprakob",
+				"number" : "1909253600008099",
+				"cvv" : "199",
+				"expMonth" : "11",
+				"expYear" : "15",
 				"customerid" : $.cookie("customerid"),
 				"fee" : <?php echo $_POST["fee"]; ?>,
 				"customerDetail": "<?php echo $_POST["customer_detail"]; ?>"

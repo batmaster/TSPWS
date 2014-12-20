@@ -108,6 +108,7 @@ if (isset($_POST["search_product_for_inventory"])) {
 	
 	$productdescs = array();
 	if ($str == "") {
+// 			echo("test2");
 		if ($cat == "Category" || $cat == "All") {
 				$product = Product::GetAllProductWithLimit(30, $pages);
 				foreach ($product as $p) {
@@ -119,8 +120,9 @@ if (isset($_POST["search_product_for_inventory"])) {
 		}
 	}
 	else {
-		$str = explode(",", $str);
-		array_map( 'trim', $tags_str );
+//		$str = explode(",", $str);
+		$str = array_map( 'trim', explode(",", $str) );
+//		array_map( 'trim', $tags_str );
 		if (!($cat == "Category" || $cat == "All")) {
 			array_push($str, $cat);
 			$productdescs = ProductDescription::SearchByTagsWithLimit($str, 30, $pages);
@@ -317,6 +319,8 @@ if (isset($_POST["sign_up"])) {
 		\"firstname\" : \"{$result->firstName}\",
 		\"lastname\" : \"{$result->lastName}\"
 	}";
+	
+	confirmemail($_POST["email"], $_POST["firstname"]." ".$_POST["lastname"]);
 }
 
 if (isset($_POST["sign-in"])) {
@@ -394,7 +398,7 @@ if (isset($_POST["add_to_cart"])) {
 	$amount = $_POST["quantity"];
 	
 	if ($amount > 0) {
-		if (Inventory::getQuntity($product->id) <= $amount) {}
+		if (Inventory::getQuntity($product->id) < $amount) {}
 		else
 			$cart->AddProduct($product, $amount);
 	}
@@ -537,12 +541,10 @@ if (isset($_POST["remove_wish"])) {
 	require_once ('inc/Product.php');
 	require_once ('inc/ProductDao.php');
 	
-	$customerId = isset($_POST["remove_wish"]);
-	$productId = isset($_POST["product_id"]);
-	echo $customerId . " " .$productId;
+	$customerId = $_POST["remove_wish"];
+	$productId = $_POST["product_id"];
 	$wishlist = WishList::GetWishListFromCustomer(Customer::GetCustomer($customerId));
 	$wishlist -> RemoveProduct(Product::GetProduct($productId),1);
-	////
 }
 
 if (isset($_POST["sign_up_admin"])) {
@@ -588,7 +590,6 @@ if (isset($_POST["get_product_in_transaction"])) {
 	$cartId = $_POST["get_product_in_transaction"];
 	$pages = $_POST["page"];
 	$products = Cart::GetCart($cartId)->GetProducts();
-	
 	echo json_encode($products);
 }
 
@@ -669,8 +670,7 @@ if (isset($_POST["save_customer_detail"])) {
 	$customer -> firstName = $_POST["firstname"];
 	$customer -> lastName = $_POST["lastname"];
 	$customer ->  Address = $_POST["address"] . "¿" . $_POST["address2"] . "¿" . $_POST["district"] . "¿" . $_POST["province"] . "¿" . $_POST["country"] . "¿" . $_POST["zip"] . "¿" . $_POST["phone"];
-	echo $customer->updateCustomer();
-	
+	$customer->updateCustomer();
 	if ($_POST["password"] != "")
 		$customer ->updatePassword( $_POST["password"] );
 }
@@ -717,10 +717,9 @@ if (isset($_POST["bind_cartid"])) {
 	$database="ecomerce";
 	 
 	$db = new PDO("mysql:host=$host;dbname=$database;charset=utf8", $user, $password);
-	$STH = $db->prepare("INSERT INTO `OrderTrackings` (`CartId`, `StatusType`, `Date`, `Description`, `UpdatedBy`) VALUES (:cid, 'ORDER_RETRIEVE', :date, 'Undefined', :by)");
+	$date = date("Y-m-d h:i:sa");
+	$STH = $db->prepare("INSERT INTO `OrderTrackings` (`CartId`, `StatusType`, `Date`, `Description`, `UpdatedBy`) VALUES (:cid, 'ORDER_RETRIEVE', '$date', 'Undefined', 'System')");
 	$STH->bindParam(':cid', $_POST["cartId"]);
-	$STH->bindParam(':date', date("Y-m-d h:i:sa"));
-	$STH->bindParam(':by', "System");
 	$STH->execute();
 }
 
@@ -927,6 +926,34 @@ if (isset($_POST["unblock"])) {
 	$customer->updateCustomer();
 }
 
+if (isset($_POST["upgrade"])) {
+	$host="localhost";
+	$user = "tsp";
+	$password="tsp";
+	$database="ecomerce";
+	
+	$db = new PDO("mysql:host=$host;dbname=$database;charset=utf8", $user, $password);
+	
+	$cid = $_POST["upgrade"];
+	
+	$STH = $db->prepare( "UPDATE `Admins` SET `Level` = 2 WHERE `AdminId` = " . $cid);
+	$STH->execute();
+}
+
+if (isset($_POST["downgrade"])) {
+	$host="localhost";
+	$user = "tsp";
+	$password="tsp";
+	$database="ecomerce";
+	
+	$db = new PDO("mysql:host=$host;dbname=$database;charset=utf8", $user, $password);
+	
+	$cid = $_POST["downgrade"];
+
+	$STH = $db->prepare( "UPDATE `Admins` SET `Level` = 1 WHERE `AdminId` = " . $cid);
+	$STH->execute();
+}
+
 if (isset($_POST["add_to_cart_by_wish"])) {
 	require_once ('inc/CustomerDao.php');
 	require_once ('inc/Customer.php');
@@ -970,86 +997,177 @@ if (isset($_POST["is_wish"])) {
 
 }
 
-if (isset($_POST["pay"])) {
-// 	$url = 'http://158.108.36.145:8000/payment';
-//     $data = json_encode($_POST["json"]);
-//    	print_r($data);
-   	
-//    	$ch = curl_init($url);
-   	
-//     curl_setopt($ch, CURLOPT_URL, $url);
-//     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-//     curl_setopt($ch, CURLOPT_POST, 1);
-//     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//     $result = curl_exec($ch);
-//     curl_close($ch);
+function confirmemail($email, $name) {
+	$strTo = $email;
+	$strSubject = "=?UTF-8?B?".base64_encode("Welcome to XTremeSportShop")."?=";
+	$strHeader .= "MIME-Version: 1.0' . \r\n";
+	$strHeader .= "Content-type: text/html; charset=utf-8\r\n";
+	$strHeader .= "From: Super admin<admin@xtremesportshop.com>\r\nReply-To: admin@xtremesportshop.com";
+	
+	$strMessage = "
+	<h1>XTreme Sport Shop confirm your register.</h1><br>
+	<br>
+	<h3>Welcome, $name<br>
+	<p>This email is sent to confirm your register to our e-commerce website XTreme Sport Shop.
+	You can signin to our website and edit your profile including your address, used for shipment
+	your items later.</p>
+	<br>
+	<br>
+	Thanks!<br>
+	Xtreme Sport Shop<br>
+	";
+	
+	$flgSend = @mail($strTo,$strSubject,$strMessage,$strHeader);  // @ = No Show Error //
+// 	if($flgSend)
+// 	{
+// 		echo "Email Sending. " .$flgSend;
+// 	}
+// 	else
+// 	{
+// 		echo "Email Can Not Send. " .$flgSend;
+// 	}
+}
 
-//     echo $result;
-// // echo ($data);
+if (isset($_POST["recovery"])) {
+	$email = $_POST["recovery"];
+	
+	$host="localhost";
+	$user = "tsp";
+	$password="tsp";
+	$database="ecomerce";
+	
+	$db = new PDO("mysql:host=$host;dbname=$database;charset=utf8", $user, $password);
+	$STH = $db->prepare( "SELECT `CustomerId` FROM `Customers` WHERE `UserName` = " .$email);
+	$cid = $STH->execute()->fetch();
+	if ($cid == 0) {
+		echo "Email not found.";
+		return;	
+	}
+	else {
+		$STH = $db->prepare( "SELECT `Tag` FROM `Recoveries` WHERE `CustomerId` = :cid AND `Date` < DATE_SUB(CURDATE(), INTERVAL 1 DAY)" );
+		$STH->bindParam(':cid', $cid );
+		$tag = $STH->execute()->fetch();
+		
+		if ($tag == "") {
+			$STH = $db->prepare("INSERT INTO `Recoveries` (`CustomerId`, `Date`, `Tag`) VALUES (:cid, :d, :t) ");
+	    	$STH->bindParam(':cid', $cid );
+	    	$STH->bindParam(':d', new Date() );
+	    	$STH->bindParam(':t', md5($email) );
+	    	$STH->execute();
+		}
+		
+		$STH = $db->prepare( "SELECT `Tag` FROM `Recoveries` WHERE `CustomerId` = :cid AND `Date` < DATE_SUB(CURDATE(), INTERVAL 1 DAY)" );
+		$STH->bindParam(':cid', $cid );
+		$tag = $STH->execute()->fetch();
+		recovery($email, $tag);
+		echo "Email is sent.";
+	}
+}
 
+function recovery($email, $tag) {
+	$strTo = $email;
+	$strSubject = "=?UTF-8?B?".base64_encode("Recovery password for XTremeSportShop")."?=";
+	$strHeader .= "MIME-Version: 1.0' . \r\n";
+	$strHeader .= "Content-type: text/html; charset=utf-8\r\n";
+	$strHeader .= "From: Super admin<admin@xtremesportshop.com>\r\nReply-To: admin@xtremesportshop.com";
 	
+	$strMessage = "
+	<h3>Welcome, $email<br>
+	<p>This email is sent for recovery your password fro our e-commerce website XTremeSportShop.
+	Click a link below to reset your password within 24 hours since you get this email.</p>
+	<br>
+	<a href=\"http://128.199.145.53/tsp/?page=recovery?tag=$tag\">Recovery</a>
+	<br>
+	Thanks!<br>
+	Xtreme Sport Shop<br>
+	";
 	
-	
-	
-	
-	
-// 	$data_string = json_encode($_POST["json"]);
-// 	print_r($data_string);
-// 	$ch = curl_init('http://158.108.36.145:8000/payment');
-// 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-// 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-// 	'Content-Type: application/json',
-// 	'Content-Length: ' . strlen($data_string))
-// 	);
-	
-// 	$result = curl_exec($ch);
-// 	echo $result;
+	$flgSend = @mail($strTo,$strSubject,$strMessage,$strHeader);
+}
 
+if (isset($_POST["get_transaction_by_customerid"])) {
+	require_once 'inc/Sale.php';
+	require_once 'inc/PaymentDao.php';
+	require_once 'inc/Cart.php';
+	require_once 'inc/InventoryDao.php';
+	require_once 'inc/Customer.php';
+	require_once 'inc/CustomerDao.php';
+	require_once 'inc/Payment.php';
+	require_once 'inc/CreditCard.php';
 	
+	$cid = $_POST["get_transaction_by_customerid"];
+	echo json_encode(Sale::GetSaleByCustomer($cid, 400, 1));
 	
-	
-   	//{"payment":{"merchant_email":"admin@kurel.com","order_id":"69","amount":"140"}}
-	$data = array (
-			"payment" => Array(
-				"merchant_email" => "admin@kurel.com",
-				"order_id" => "99",
-				"amount" => "1200"
-			)
-	);
-	
-	$bodyData = array (
-			'json' => json_encode($data)
-	);
-	$bodyStr = http_build_query($bodyData);
-	
-	$url = 'http://158.108.36.145:8000/payment';
-	
-	$ch = curl_init($url);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	'Content-Type: application/json',
-	'Content-Length: ' . strlen($data_string))
-	);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-//	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	//curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	//'Content-Type: application/json',
-//	'Content-Length: '.strlen($bodyStr)
-//	));
-//	curl_setopt($ch, CURLOPT_POST, 1);
-//	curl_setopt($ch, CURLOPT_POSTFIELDS, $bodyStr);
-	
-	
-	$result = curl_exec($ch);
+}
 
-	echo "Curl Error :--" . curl_error($ch);
-	curl_close($ch);	
-	echo $result;
+if (isset($_POST["get_transaction_by_daterange"])) {
+	require_once 'inc/Sale.php';
+	require_once 'inc/PaymentDao.php';
+	require_once 'inc/Cart.php';
+	require_once 'inc/InventoryDao.php';
+	require_once 'inc/Customer.php';
+	require_once 'inc/CustomerDao.php';
+	require_once 'inc/Payment.php';
+	require_once 'inc/CreditCard.php';
+
+	$start = $_POST["start"];
+	$end = $_POST["end"];
+	
+	echo json_encode(Sale::GetSaleByDateTime($start, $end, 30, 1));
+
+}
+
+if (isset($_POST["get_transaction_by_cartid"])) {
+	require_once 'inc/Sale.php';
+	require_once 'inc/PaymentDao.php';
+	require_once 'inc/Cart.php';
+	require_once 'inc/InventoryDao.php';
+	require_once 'inc/Customer.php';
+	require_once 'inc/CustomerDao.php';
+	require_once 'inc/Payment.php';
+	require_once 'inc/CreditCard.php';
+
+	$cartId = $_POST["get_transaction_by_cartid"];
+	echo json_encode(Sale::GetSaleByCartId($cartId));
+
+}
+
+if (isset($_POST["get_promotion_by_datetime"])) {
+	require_once 'inc/Promotion.php';
+	require_once 'inc/PaymentDao.php';
+	require_once 'inc/Admin.php';
+	require_once 'inc/CustomerDao.php';
+
+	$start = $_POST["start"];
+	$end = $_POST["end"];
+	
+	echo json_encode(Promotion::GetPromotionsByDateTime($start, $end, 30, 1));
+
+}
+
+if (isset($_POST["confirm-payment_only_outer_fullfill"])) {
+	include_once 'inc/CreditCard.php';
+	include_once 'inc/Customer.php';
+	include_once 'inc/CustomerDao.php';
+	include_once 'inc/Cart.php';
+	include_once 'inc/Sale.php';
+	require_once ('inc/InventoryDao.php');
+	require_once ('inc/Product.php');
+	require_once ('inc/ProductDao.php');
+	require_once ('inc/Promotion.php');
+	require_once ('inc/PaymentDao.php');
+	require_once ('inc/Payment.php');
+
+	$card = CreditCard::CreateCreditCard($_POST["name"], $_POST["number"], $_POST["cvv"], $_POST["expYear"], $_POST["expMonth"]);
+	$customer = Customer::GetCustomer($_POST['customerid']);	
+	$customerDetail = $_POST["customerDetail"];
+	$cart = $customer->getCart();
+	$cart->setFee($_POST["fee"]);
+	$sale = $cart->purchase($card, $customerDetail);
+
+	if($sale !== null){
+		echo("Pass");
+	}else{
+		echo("Fail");
+	}
 }
