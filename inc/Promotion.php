@@ -13,8 +13,7 @@
 	public $description;
 	
 	public static function Total( $total ) {
-	    //GET TODAY
-	    return $total * 0.8;
+	    return $total * (100 - PaymentDao::GetInstance()->getCurrentPromotionPercent()) / 100.0;
 	}
 	
 	public static function CreatePercentPromotion( $percent, $startDate, $endDate, $admin, $title, $description ) {
@@ -43,6 +42,15 @@
 	
 	public static function GetAllPromotions() {
 	    $data = PaymentDao::GetInstance()->getAllPromotion();
+	    $result = array();
+	    foreach( $data as &$val ) {
+		array_push( $result, Promotion::DataToPromo( $val ) );
+	    }
+	    return $result;
+	}
+	
+	public static function GetPromotionsByDateTime( $start, $end, $limit, $page) {
+	    $data = PaymentDao::GetInstance()->getPromotionByDate( $start, $end, $limit, $page);
 	    $result = array();
 	    foreach( $data as &$val ) {
 		array_push( $result, Promotion::DataToPromo( $val ) );

@@ -101,7 +101,7 @@
 		<table class="table">
 			<tr>
 				<td><button type="button" class="btn btn-info" id="button-back" style="width: 100%">&lt; Back to shopping</button></td>
-				<td><button type="button" class="btn btn-primary" id="button-pay" style="width: 100%">Pay with Dummybank &gt;</button></td>
+				<!-- <td><button type="button" class="btn btn-primary" id="button-pay" style="width: 100%">Pay with Dummybank &gt;</button></td> -->
 				<td><button type="button" class="btn btn-primary" id="button-kup" style="width: 100%">Pay with KUPaypal &gt;</button></td>
 			</tr>
 		</table>
@@ -143,75 +143,76 @@
 			$("#zip").val(customer_obj.zip);
 			$("#phone").val(customer_obj.phone);
 
-			showFees();
+// 			showFees();
 		});
 		
 	});
 
-	function showFees() {
-		$.ajax({
-			url: 'forjscallphp.php',
-			type: "POST",
-			data: { "get_cartid_by_customerid": $.cookie("customerid") }
-		}).done(function(oid) {
+// 	function showFees() {
+// 		$.ajax({
+// 			url: 'forjscallphp.php',
+// 			type: "POST",
+// 			data: { "get_cartid_by_customerid": $.cookie("customerid") }
+// 		}).done(function(oid) {
 			
 
-			///////////////////////////
-			// customer here //
-			var cu = ('{"recieve_name": "' + GCUS.firstname + " " + GCUS.lastname + '", "recieve_address": "' + GCUS.address + " " + GCUS.address2 + " " + GCUS.district + " " + GCUS.province + " " + GCUS.country + " " + GCUS.zip + " " + GCUS.phone + '", "courier_name": ' + "\"XTremeSportShopWS" + '", "courier_address": "' + "KU" + '", "type": "' + "Normal" + '", "eCommerceOrderID": ' + oid + ', "items": ');
-			////
+// 			///////////////////////////
+// 			// customer here //
+// 			var cu = ('{"recieve_name": "' + GCUS.firstname + " " + GCUS.lastname + '", "recieve_address": "' + GCUS.address + " " + GCUS.address2 + " " + GCUS.district + " " + GCUS.province + " " + GCUS.country + " " + GCUS.zip + " " + GCUS.phone + '", "courier_name": ' + "\"XTremeSportShopWS" + '", "courier_address": "' + "KU" + '", "type": "' + "Normal" + '", "eCommerceOrderID": ' + oid + ', "items": ');
+// 			////
 			
-			cu += '{"items": ['; 
-			var pr = "";
-			for (var i = 0; i < GPRO.length; i++) {
-			// product list here //
-			pr += ('{"id": ' + GPRO[i].Product.id + ', "name": "' + GPRO[i].Product.productDescription.productName + '", "price": ' + GPRO[i].Product.price + ', "weight": ' + GPRO[i].Product.productDescription.weight + ', "quantity": ' + GPRO[i].Quantity + '},');
-			////
-			}
-			pr = pr.substring(0, pr.length-1);
-			cu += pr + ']}}';
-			var order_json = JSON.parse(cu);
+// 			cu += '{"items": ['; 
+// 			var pr = "";
+// 			for (var i = 0; i < GPRO.length; i++) {
+// 			// product list here //
+// 			pr += ('{"id": ' + GPRO[i].Product.id + ', "name": "' + GPRO[i].Product.productDescription.productName + '", "price": ' + GPRO[i].Product.price + ', "weight": ' + GPRO[i].Product.productDescription.weight + ', "quantity": ' + GPRO[i].Quantity + '},');
+// 			////
+// 			}
+// 			pr = pr.substring(0, pr.length-1);
+// 			cu += pr + ']}}';
+// 			var order_json = JSON.parse(cu);
 			
-			$.ajax({
-				url: 'http://128.199.175.223:8000/orders/shipmentcost/kurel',
-				type: "POST",
-				dataType: "json",
-				data: order_json
+// 			$.ajax({
+// 				url: 'http://128.199.175.223:8000/fulfillment/orders/shipmentcost/kurel',
+// 				type: "POST",
+// 				dataType: "json",
+// 				data: order_json
 			
-			}).done(function(fee, textStatus, xhr) {
-				$("#deliveryfee").text(fee);
-				$("#deliverytotal").text(amount + fee);
-			});
-			//////
-			// customer here //
-			console.log(GCUS);
-			var cu = ('{"recieve_name": "' + GCUS.firstname + " " + GCUS.lastname + '", "recieve_address": "' + GCUS.address + " " + GCUS.address2 + " " + GCUS.district + " " + GCUS.province + " " + GCUS.country + " " + GCUS.zip + " " + GCUS.phone + '", "courier_name": ' + "\"XTremeSportShopWS" + '", "courier_address": "' + "KU" + '", "type": "' + "EMS" + '", "eCommerceOrderID": ' + oid + ', "items": ');
-			////
+// 			}).done(function(fee, textStatus, xhr) {
+// 				$("#deliveryfee").text(fee);
+// 				$("#deliverytotal").text(amount + fee);
+// 			});
+// 			//////
+// 			// customer here //
+// 			console.log(GCUS);
+// 			var cu = ('{"order":{"recieve_name": "' + GCUS.firstname + " " + GCUS.lastname + '", "recieve_address": "' + GCUS.address + " " + GCUS.address2 + " " + GCUS.district + " " + GCUS.province + " " + GCUS.country + " " + GCUS.zip + " " + GCUS.phone + '", "courier_name": ' + "\"XTremeSportShopWS" + '", "courier_address": "' + "KU" + '", "type": "' + "EMS" + '", "eCommerceOrderID": ' + oid + ', "items": ');
+// 			////
 			
-			cu += '{"items": ['; 
-			var pr = "";
-			for (var i = 0; i < GPRO.length; i++) {
-			// product list here //
-			pr += ('{"id": ' + GPRO[i].Product.id + ', "name": "' + GPRO[i].Product.productDescription.productName + '", "price": ' + GPRO[i].Product.price + ', "weight": ' + GPRO[i].Product.productDescription.weight + ', "quantity": ' + GPRO[i].Quantity + '},');
-			////
-			}
-			pr = pr.substring(0, pr.length-1);
-			cu += pr + ']}}';
-			var order_json = JSON.parse(cu);
-			$.ajax({
-				url: 'http://128.199.175.223:8000/orders/shipmentcost/kurel',
-				type: "POST",
-				dataType: "json",
-				data: order_json
+// 			cu += '{"item": ['; 
+// 			var pr = "";
+// 			for (var i = 0; i < GPRO.length; i++) {
+// 			// product list here //
+// 			pr += ('{"id": ' + GPRO[i].Product.id + ', "name": "' + GPRO[i].Product.productDescription.productName + '", "price": ' + GPRO[i].Product.price + ', "weight": ' + GPRO[i].Product.productDescription.weight + ', "quantity": ' + GPRO[i].Quantity + '},');
+// 			////
+// 			}
+// 			pr = pr.substring(0, pr.length-1);
+// 			cu += pr + ']}}}';
+// 			var order_json = JSON.parse(cu);
+// 			console.log(cu);
+// 			$.ajax({
+// 				url: 'http://128.199.175.223:8000/orders/shipmentcost/kurel',
+// 				type: "POST",
+// 				dataType: "json",
+// 				data: order_json
 			
-			}).done(function(fee, textStatus, xhr) {
-				$("#emsfee").text(total);
-				$("#emstotal").text(amount + fee);
-			});
+// 			}).done(function(fee, textStatus, xhr) {
+// 				$("#emsfee").text(total);
+// 				$("#emstotal").text(amount + fee);
+// 			});
 			
-			//////////////////////////
-		});
-	}
+// 			//////////////////////////
+// 		});
+// 	}
 
 	function getEMSFee(weight,amount) {
 		var total = 0;
@@ -498,7 +499,13 @@
 		
 		//document.location.href = "http://158.108.36.145:8000/users/sign_in";
 */
-
+		var cd = $("#firstname").val() + " " + $("#lastname").val() + "**" + 
+		$("#address").val() + "**" + $("#address2").val() + "**" + 
+		$("#district").val() + "**" + $("#province").val() + "**" + 
+		$("#country").val() + "**" + $("#zip").val() + "**" + 
+		$("#phone").val();
+		
+		$.cookie("customer_detail", cd, { expires: 15 });
 		$.ajax({
 			url: 'forjscallphp.php',
 			type: "POST",
@@ -514,10 +521,10 @@
 			};
 			
 			console.log(js);
-			$.ajax({
-				url: 'http://128.199.212.108:8000/payment',
-				type: "GET"
-			}).done(function(data, textStatus, xhr) {
+// 			$.ajax({
+// 				url: 'http://128.199.212.108:8000/payment',
+// 				type: "GET"
+// 			}).done(function(data, textStatus, xhr) {
 			
 					$.ajax({
 						url: 'http://128.199.212.108:8000/payment',
@@ -533,20 +540,20 @@
 				        if (xhr.status == 201) {
 // 					        alert(xhr.status)
 
-				        	$.ajax({
-								url: 'forjscallphp.php',
-								type: "POST",
-								data: {
-									"get_cartid_by_customerid": $.cookie("customerid")
-								}
-							}).done(function(cartid) {
-								document.location.href = "?page=transaction-detail&cartId=" + (cartid - 1) + "&orderId=" + oid + "&paymentId=" + payid;
-							});
+// 				        	$.ajax({
+// 								url: 'forjscallphp.php',
+// 								type: "POST",
+// 								data: {
+// 									"get_cartid_by_customerid": $.cookie("customerid")
+// 								}
+// 							}).done(function(cartid) {
+								document.location.href = "?page=transaction-detail&cartId=" + oid + "&paymentId=" + payid;
+// 							});
 							
 				        }
 					});
 					
-			});
+// 			});
 			
 			
 		});

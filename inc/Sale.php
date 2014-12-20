@@ -27,6 +27,24 @@
 	    return $result;
 	}
 	
+	public static function GetSaleByDateTime( $start, $end, $limit, $page ) {
+	    $datas = PaymentDao::GetInstance()->GetSaleByTimeDate( $start, $end, $limit, $page );
+	    $result = array();
+	    foreach( $datas as &$val ) {
+	    	array_push( $result, Sale::dataToSale( $val ) );
+	    }
+	    return $result;
+	}
+	
+	public static function GetSaleByCustomer( $cid, $limit, $page ) {
+	    $datas = PaymentDao::GetInstance()->GetSaleByCustomerId( $cid, $limit, $page );
+	    $result = array();
+	    foreach( $datas as &$val ) {
+	    	array_push( $result, Sale::dataToSale( $val ) );
+	    }
+	    return $result;
+	}
+	
 	public static function GetAllWithLimit( $limit, $page ) {
 		$datas = PaymentDao::GetInstance()->GetAllSaleWithLimit( $limit, $page );
 		$result = array();
@@ -44,6 +62,11 @@
 	    $instance->customerDetail = $data['CustomerDetail'];
 	    return $instance;
 	}
+	
+	public static function GetSaleByCartId( $cartId ) {
+	    return Sale::dataToSale( PaymentDao::GetInstance()->GetSaleByCartId( $cartId ) );
+	}
+	
     }
 
 ?>

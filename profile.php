@@ -100,7 +100,9 @@ input {
 							<th>Customer</th>
 							<th>Total</th>
 							<th>Promotion</th>
-							<th>Status</th>
+							<th>Order Status</th>
+							<th>Payment Status</th>
+							<th>Shipping Status</th>
 						</tr>
 					</tbody>
 				</table>
@@ -112,7 +114,7 @@ input {
 <script type="text/javascript">
 
 	$(document).ready(function() {
-		if ($.cookie("customerid") != undefined) {
+		if ($.cookie("customerid") != undefined && $.cookie("adminlevel") == undefined) {
 			$("#redzone").show();
 		}
 		else
@@ -141,6 +143,7 @@ input {
 		});
 	});
 
+	// Get profile
 	$(document).ready(function() {
 		$.ajax({
 			url: 'forjscallphp.php',
@@ -165,6 +168,81 @@ input {
 
 			$("#signup-password").prop('disabled', true);
 			$("#signup-password-confirm").prop('disabled', true);
+		});
+	});
+
+	// Get transactions
+	$(document).ready(function() {
+		$.ajax({
+			url: 'forjscallphp.php',
+			type: "POST",
+			data: {
+				"get_transaction_by_customerid": $.cookie("customerid")
+			}
+		}).done(function(trans) {
+			var ts = JSON.parse(trans);
+// 			console.log(ts);
+
+			$("#transaction-list").empty();
+			$("#transaction-list").append("\
+					<tr>\
+						<th>ID</th>\
+						<th>Date</th>\
+						<th>Customer</th>\
+						<th>Total</th>\
+						<th>Promotion</th>\
+						<th>Order Status</th>\
+						<th>Payment Status</th>\
+						<th>Shipping Status</th>\
+					</tr>");
+
+			for (var i = 0; i < ts.length; i++) {
+				console.log(ts[i]);
+				var row = "\
+						<tr>\
+							<td><a href=\"?page=transaction-detail&cartId=" + ts[i].cart.cartId + "\">" + ts[i].cart.cartId + "</a></td>\
+							<td>" + ts[i].payment.timeDate.date + "</td>\
+							<td>" + ts[i].cart.customer.firstName + " " + ts[i].cart.customer.lastName + "</td>\
+							<td>" + ts[i].payment.amount + "</td>";
+
+				(function(date, amount) {
+					$.ajax({
+						url: 'forjscallphp.php',
+						type: "POST",
+						async: false,
+						data : {
+							"get_promotion_by_datetime": "",
+							"start": date,
+							"end": date
+						}
+					}).done(function(tran) {
+						try {
+			 				console.log(".......V");
+							var val = JSON.parse(tran)[0].value;
+
+			 				console.log(val);
+			 				console.log(".......^");
+							var pro = JSON.parse(tran)[0];
+							row += "<td>" + ((100.0-val)/100*amount).toFixed(2) + " </td>"
+						} catch (err) {
+							row += "<td></td>"
+						}
+						
+					});
+				})(ts[i].payment.timeDate.date, ts[i].payment.amount);
+
+
+				$.ajax({
+			        url: 'http://localhost:11111/orders/' + ts[i].cart.cartId,
+			        async: false,
+			        type: "GET"
+			    }).done(function(s) {
+			    	row += '<td>' + s.order.order_status + '</td><td>' + s.order.payment_status + '</td><td>' + s.order.shipping_Status + '</td>';
+			    });
+				
+				$("#transaction-list").append(row);
+				
+			}
 		});
 	});
 

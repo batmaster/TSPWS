@@ -144,10 +144,25 @@
 	    return $STH->fetchAll();
 	}
 	
+	public function getPromotionByDate( $start, $end, $limit, $page) {
+	    $page = $limit * ( $page - 1 );
+	    $STH = $this->db->prepare(  "SELECT * FROM `Promotions` WHERE `EndDate` >= '$start' AND `StartDate` <= '$end' LIMIT $limit OFFSET $page" );
+	    $STH->execute();
+	    return $STH->fetchAll();
+	}
+	
 	public function getCurrentPromotion() {
 	    $STH = $this->db->prepare(  "SELECT * FROM `Promotions` WHERE `StartDate` <= NOW() AND `EndDate` >= NOW()" );
 	    $STH->execute();
 	    return $STH->fetchAll();
+	}
+	
+	public function getCurrentPromotionPercent() {
+		$STH = $this->db->prepare(  "SELECT Value FROM `Promotions` WHERE `StartDate` <= NOW() AND `EndDate` >= NOW()" );
+		$STH->execute();
+		if($STH->fetch().length == 0)
+			return 0;
+		return $STH->fetch()[0];
 	}
 	
 	public function checkOverlapPromotion($date) {
@@ -155,6 +170,33 @@
 		$STH->execute();
 		return $STH->fetch()["num"];
 	}
+	
+	public function GetSaleByTimeDate( $start, $end, $limit, $page ) {
+	    $page = $limit * ( $page - 1 );
+	    $STH = $this->db->prepare(  "SELECT * FROM
+				      ( Sales s JOIN Payments p ON
+				      s.PaymentId = p.PaymentId ) WHERE p.DateTime > '$start' AND p.DateTime < '$end'  LIMIT $limit OFFSET $page" );
+	    $STH->execute();
+	    return $STH->fetchAll();
+	}
+	
+	public function GetSaleByCartId( $cartId ) {
+	    $STH = $this->db->prepare(  "SELECT * FROM
+				      ( Sales s JOIN Carts c ON
+				      s.CartId = c.CartId ) WHERE c.CartId = $cartId" );
+	    $STH->execute();
+	    return $STH->fetch();
+	}
+	
+	public function GetSaleByCustomerId( $customerId, $limit, $page ) {
+	    
+	    $STH = $this->db->prepare(  "SELECT * FROM ( Sales s JOIN Carts c ON s.CartId = c.CartId ) WHERE c.CustomerId = $customerId LIMIT $limit OFFSET $page" );
+	    $STH->execute();
+	    return $STH->fetchAll();
+	}
     }
+    
+//    ิน print_r( PaymentDao::GetInstance()->GetSaleByTimeDate( new DateTime('now'), new DateTime('now'), 2, 1 ) );
+    
     
 ?>
