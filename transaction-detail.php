@@ -52,7 +52,7 @@
 
 	$(document).ready(function() {
 		$.ajax({
-			url: 'forjscallphp.php',
+			url: 'trash/forjscallphp.php',
 			type: 'POST',
 			data: {
 				'get_product_in_transaction': <?php echo $_GET["cartId"];?>
@@ -125,7 +125,7 @@
 
 	function fullfill() {
 		$.ajax({
-			url: 'forjscallphp.php',
+			url: 'trash/forjscallphp.php',
 			type: "POST",
 			data: {
 				"confirm-payment_only_outer_fullfill" : "",
@@ -144,7 +144,7 @@
 			var j = '{"order": {"site": "kurel","products": [';
 			
 			$.ajax({
-				url: 'forjscallphp.php',
+				url: 'trash/forjscallphp.php',
 				type: 'POST',
 				data: {
 					'get_product_in_transaction': <?php echo $_GET["cartId"];?>
@@ -163,7 +163,7 @@
 					j += '],"totalprice":"' + total + '","customer_id":"' + $.cookie("customerid") + '","customer_name":"' + $.cookie("firstname") + " " + $.cookie("lastname") + '","email":"' + $.cookie("email") + '",';
 
 					$.ajax({
-						url: 'forjscallphp.php',
+						url: 'trash/forjscallphp.php',
 						type: "POST",
 						data : {
 							"get_customer_detail_by_cartid": <?php echo $_GET["cartId"] ?>
@@ -195,7 +195,7 @@
 
 	// 1 make or ordertrackingid
     $.ajax({
-        url: 'forjscallphp.php',
+        url: 'trash/forjscallphp.php',
         type: "POST",
         async: false,
         data : {
@@ -204,7 +204,7 @@
     }).done(function(response) {
         if (response == 0) {
             $.ajax({
-                url: 'forjscallphp.php',
+                url: 'trash/forjscallphp.php',
                 type: "POST",
                 async: false,
                 data : {
@@ -222,19 +222,19 @@
 //         alert(1);
 // 	    // 2 get lastest status #ORDER_RETRIEVE
 // 	    $.ajax({
-	        url: 'http://localhost:11111/orders/<?php echo $_GET["cartId"]; ?>',
+//	        url: 'http://localhost:11111/orders/<?php echo $_GET["cartId"]; ?>',
 // 	        async: false,
 // 	        type: "GET"
 // 	    }).done(function(lasteststatus) {
 // 	        var obj = JSON.parse(lasteststatus);
 // 		    console.log(obj)
 // 	//      console.log(lasteststatus);
-	        $("#status").html('<a href="?page=tracking&id=<?php echo $_GET["cartId"] ?>">' + obj[0].StatusType + '</a>');
+//	        $("#status").html('<a href="?page=tracking&id=<?php echo $_GET["cartId"] ?>">' + obj[0].StatusType + '</a>');
 // 	    });
 //     }
 
     $.ajax({
-        url: 'forjscallphp.php',
+        url: 'trash/forjscallphp.php',
         type: "POST",
         data : {
             "get_transaction_by_cartid": <?php echo $_GET["cartId"] ?>
@@ -246,7 +246,7 @@
         $("#date").text(date);
         
         $.ajax({
-            url: 'forjscallphp.php',
+            url: 'trash/forjscallphp.php',
             type: "POST",
             data : {
                 "get_promotion_by_datetime": "",
