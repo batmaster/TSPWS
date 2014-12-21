@@ -54,6 +54,7 @@
 		$.ajax({
 			url: 'forjscallphp.php',
 			type: 'POST',
+			
 			data: {
 				'get_product_in_transaction': <?php echo $_GET["cartId"]; ?>
 			},
@@ -177,8 +178,8 @@
 						$.ajax({
 							url: 'http://localhost:11111/orders/',
 							type: "POST",
-							contentType: 'application/json',
-							dataType: 'json',
+// 							contentType: 'application/json',
+// 							dataType: 'json',
 							async: false,
 							data : j
 						}).done(function(resp) {
