@@ -4,7 +4,7 @@
 		<h3 class="panel-title">Transaction Confirm</h3>
 	</div>
 	<div class="panel-body">
-		<p>CartId = <?php echo $_GET["cartId"] ?><p>
+		<p>CartId = <?php echo $_GET["cartId"]; ?><p>
 		<!-- <p>Status = <span id="status"></span><p> -->
 		<p id="pay"></p>
 	</div>
@@ -55,7 +55,7 @@
 			url: 'forjscallphp.php',
 			type: 'POST',
 			data: {
-				'get_product_in_transaction': "<?php echo $_GET["cartId"];?>"
+				'get_product_in_transaction': <?php echo $_GET["cartId"]; ?>
 			},
 			success: function(json_str2) {
 // 				console.log(json_str2);
@@ -100,7 +100,7 @@
 		
 // 		// 2 get lastest status #ORDER_RETRIEVE
 // 		$.ajax({
-//			url: 'http://128.199.145.53:11111/orders/' + <?php echo $_GET["orderId"] ?>,
+//			url: 'http://128.199.145.53:11111/orders/' + <?php //echo $_GET["orderId"]; ?>,
 // 			type: "GET"
 // 		}).done(function(orders_json) {
 // 			var order = JSON.parse(orders_json);
@@ -134,8 +134,8 @@
 				"cvv" : "199",
 				"expMonth" : "11",
 				"expYear" : "15",
-				"customerid" : '"' + $.cookie("customerid") + '"',
-				"fee" : "0",
+				"customerid" : $.cookie("customerid"),
+				"fee" : 0,
 				"customerDetail": $.cookie("customer_detail")
 			}
 		}).done(function(response) {
@@ -147,7 +147,7 @@
 				url: 'forjscallphp.php',
 				type: 'POST',
 				data: {
-					'get_product_in_transaction': "<?php echo $_GET["cartId"]; ?>"
+					'get_product_in_transaction': <?php echo $_GET["cartId"]; ?>
 				},
 				success: function(json_str2) {
 					var products = JSON.parse(json_str2);
@@ -166,12 +166,12 @@
 						url: 'forjscallphp.php',
 						type: "POST",
 						data : {
-							"get_customer_detail_by_cartid": "<?php echo $_GET["cartId"] ?>"
+							"get_customer_detail_by_cartid": <?php echo $_GET["cartId"]; ?>
 						}
 					}).done(function(customer_detail) {
 						var res = customer_detail.split("**");
 						j += '"phone_number":"' + res[7] + '","address":"' + res[1] + " " + res[2] + " " + res[3] + " " + res[4] + " " + res[5] + " " + res[6] + '"';
-						j += ',"payment_type":"credit","id":"<?php echo $_GET["cartId"];?>"}}';
+						j += ',"payment_type":"credit","id":"<?php echo $_GET["cartId"]; ?>"}}';
 						console.log(j);
 						
 						$.ajax({
@@ -199,7 +199,7 @@
         type: "POST",
         async: false,
         data : {
-            "is_cartid_exists": "<?php echo $_GET["cartId"] ?>"
+            "is_cartid_exists": <?php echo $_GET["cartId"]; ?>
         }
     }).done(function(response) {
         if (response == 0) {
@@ -209,7 +209,7 @@
                 async: false,
                 data : {
                     "bind_cartid": "",
-                    "cartId": "<?php echo $_GET["cartId"] ?>"
+                    "cartId": <?php echo $_GET["cartId"]; ?>
                 }
             }).done(function(response) {
                 console.log("just added");
@@ -229,7 +229,7 @@
 // 	        var obj = JSON.parse(lasteststatus);
 // 		    console.log(obj)
 // 	//      console.log(lasteststatus);
-//	        $("#status").html('<a href="?page=tracking&id=<?php //echo $_GET["cartId"] ?>">' + obj[0].StatusType + '</a>');
+//	        $("#status").html('<a href="?page=tracking&id=<?php //echo $_GET["cartId"]; ?>">' + obj[0].StatusType + '</a>');
 // 	    });
 //     }
 
@@ -237,7 +237,7 @@
         url: 'forjscallphp.php',
         type: "POST",
         data : {
-            "get_transaction_by_cartid": "<?php echo $_GET["cartId"] ?>"
+            "get_transaction_by_cartid": <?php echo $_GET["cartId"]; ?>
         }
     }).done(function(tran) {
 //         console.log(tran);
