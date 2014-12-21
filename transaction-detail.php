@@ -55,7 +55,7 @@
 			url: 'forjscallphp.php',
 			type: 'POST',
 			data: {
-				'get_product_in_transaction': "<?php echo $_GET["cartId"];?>";
+				'get_product_in_transaction': "<?php echo $_GET["cartId"];?>"
 			},
 			success: function(json_str2) {
 // 				console.log(json_str2);
