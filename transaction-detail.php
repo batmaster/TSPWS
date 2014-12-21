@@ -52,10 +52,10 @@
 
 	$(document).ready(function() {
 		$.ajax({
-			url: 'trash/forjscallphp.php',
+			url: 'forjscallphp.php',
 			type: 'POST',
 			data: {
-				'get_product_in_transaction': <?php echo $_GET["cartId"];?>
+				'get_product_in_transaction': "<?php echo $_GET["cartId"];?>";
 			},
 			success: function(json_str2) {
 // 				console.log(json_str2);
@@ -125,7 +125,7 @@
 
 	function fullfill() {
 		$.ajax({
-			url: 'trash/forjscallphp.php',
+			url: 'forjscallphp.php',
 			type: "POST",
 			data: {
 				"confirm-payment_only_outer_fullfill" : "",
@@ -134,8 +134,8 @@
 				"cvv" : "199",
 				"expMonth" : "11",
 				"expYear" : "15",
-				"customerid" : $.cookie("customerid"),
-				"fee" : 0,
+				"customerid" : '"' + $.cookie("customerid") + '"',
+				"fee" : "0",
 				"customerDetail": $.cookie("customer_detail")
 			}
 		}).done(function(response) {
@@ -144,10 +144,10 @@
 			var j = '{"order": {"site": "kurel","products": [';
 			
 			$.ajax({
-				url: 'trash/forjscallphp.php',
+				url: 'forjscallphp.php',
 				type: 'POST',
 				data: {
-					'get_product_in_transaction': <?php echo $_GET["cartId"];?>
+					'get_product_in_transaction': "<?php echo $_GET["cartId"]; ?>"
 				},
 				success: function(json_str2) {
 					var products = JSON.parse(json_str2);
@@ -163,10 +163,10 @@
 					j += '],"totalprice":"' + total + '","customer_id":"' + $.cookie("customerid") + '","customer_name":"' + $.cookie("firstname") + " " + $.cookie("lastname") + '","email":"' + $.cookie("email") + '",';
 
 					$.ajax({
-						url: 'trash/forjscallphp.php',
+						url: 'forjscallphp.php',
 						type: "POST",
 						data : {
-							"get_customer_detail_by_cartid": <?php echo $_GET["cartId"] ?>
+							"get_customer_detail_by_cartid": "<?php echo $_GET["cartId"] ?>"
 						}
 					}).done(function(customer_detail) {
 						var res = customer_detail.split("**");
@@ -195,21 +195,21 @@
 
 	// 1 make or ordertrackingid
     $.ajax({
-        url: 'trash/forjscallphp.php',
+        url: 'forjscallphp.php',
         type: "POST",
         async: false,
         data : {
-            "is_cartid_exists": <?php echo $_GET["cartId"] ?>
+            "is_cartid_exists": "<?php echo $_GET["cartId"] ?>"
         }
     }).done(function(response) {
         if (response == 0) {
             $.ajax({
-                url: 'trash/forjscallphp.php',
+                url: 'forjscallphp.php',
                 type: "POST",
                 async: false,
                 data : {
                     "bind_cartid": "",
-                    "cartId": <?php echo $_GET["cartId"] ?>
+                    "cartId": "<?php echo $_GET["cartId"] ?>"
                 }
             }).done(function(response) {
                 console.log("just added");
@@ -222,22 +222,22 @@
 //         alert(1);
 // 	    // 2 get lastest status #ORDER_RETRIEVE
 // 	    $.ajax({
-//	        url: 'http://localhost:11111/orders/<?php echo $_GET["cartId"]; ?>',
+//	        url: 'http://localhost:11111/orders/<?php //echo $_GET["cartId"]; ?>',
 // 	        async: false,
 // 	        type: "GET"
 // 	    }).done(function(lasteststatus) {
 // 	        var obj = JSON.parse(lasteststatus);
 // 		    console.log(obj)
 // 	//      console.log(lasteststatus);
-//	        $("#status").html('<a href="?page=tracking&id=<?php echo $_GET["cartId"] ?>">' + obj[0].StatusType + '</a>');
+//	        $("#status").html('<a href="?page=tracking&id=<?php //echo $_GET["cartId"] ?>">' + obj[0].StatusType + '</a>');
 // 	    });
 //     }
 
     $.ajax({
-        url: 'trash/forjscallphp.php',
+        url: 'forjscallphp.php',
         type: "POST",
         data : {
-            "get_transaction_by_cartid": <?php echo $_GET["cartId"] ?>
+            "get_transaction_by_cartid": "<?php echo $_GET["cartId"] ?>"
         }
     }).done(function(tran) {
 //         console.log(tran);
@@ -246,7 +246,7 @@
         $("#date").text(date);
         
         $.ajax({
-            url: 'trash/forjscallphp.php',
+            url: 'forjscallphp.php',
             type: "POST",
             data : {
                 "get_promotion_by_datetime": "",
