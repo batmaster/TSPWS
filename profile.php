@@ -197,7 +197,7 @@ input {
 					</tr>");
 
 			for (var i = 0; i < ts.length; i++) {
-				console.log(ts[i]);
+// 				console.log(ts[i]);
 				var row = "\
 						<tr>\
 							<td><a href=\"?page=transaction-detail&cartId=" + ts[i].cart.cartId + "\">" + ts[i].cart.cartId + "</a></td>\
@@ -217,11 +217,11 @@ input {
 						}
 					}).done(function(tran) {
 						try {
-			 				console.log(".......V");
+// 			 				console.log(".......V");
 							var val = JSON.parse(tran)[0].value;
 
 			 				console.log(val);
-			 				console.log(".......^");
+// 			 				console.log(".......^");
 							var pro = JSON.parse(tran)[0];
 							row += "<td>" + ((100.0-val)/100*amount).toFixed(2) + " </td>"
 						} catch (err) {
@@ -282,7 +282,7 @@ input {
 	});
 
 	$("#change-password-checkbox").click(function() {
-		console.log($('#change-password-checkbox').is(':checked'));
+// 		console.log($('#change-password-checkbox').is(':checked'));
 			$("#signup-password").prop('disabled', !$('#change-password-checkbox').is(':checked'));
 			$("#signup-password-confirm").prop('disabled', !$('#change-password-checkbox').is(':checked'));
 			

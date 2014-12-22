@@ -175,7 +175,7 @@
 						console.log(j);
 						
 						$.ajax({
-							url: 'http://128.119.145.53:11111/orders/',
+							url: 'http://localhost:11111/orders/',
 							type: "POST",
 							contentType: 'application/json',
 							dataType: 'json',

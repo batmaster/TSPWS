@@ -214,7 +214,32 @@
 // 		});
 // 	}
 
-	function getEMSFee(weight,amount) {
+	function getEMSFee(weight, amount) {
+// 		var dat = "<shipment>\
+// 	    		  <type>EMS</type>\
+// 	    		  <items>\
+// 	    		    <item>\
+// 	    		      <name>All</name>\
+// 	    		      <weight>" + weight + "</weight>\
+// 	    		      <quantity>1</quantity>\
+// 	    		    </item>\
+// 	    		  </items>\
+// 	    		</shipment>\
+// 	    ";
+// 	    console.log(dat);
+// 		$.ajax({
+// 		    type     : "POST",
+// 		    url      : "http://track-trace.tk:8080/shipments/calculate",
+// 		    data     : dat,
+// 		    contentType : "application/xml",
+// 		    accepts:"application/json",
+// 		    success  : function(msg) {
+// 			    console.log(msg);
+// // 		    	var total = msg.shipment.total_cost;
+// 		    	$("#emsfee").text(total);
+// 				$("#emstotal").text(amount + total);
+// 		    }
+// 		});
 		var total = 0;
 		if(weight < 20)
 			total += 32;
@@ -267,6 +292,31 @@
 	}
 
 	function getDeliverFee(weight,amount) {
+// 		var dat = "<shipment>\
+//   		  <type>common</type>\
+//   		  <items>\
+//   		    <item>\
+//   		      <name>All</name>\
+//   		      <weight>" + weight + "</weight>\
+//   		      <quantity>1</quantity>\
+//   		    </item>\
+//   		  </items>\
+//   		</shipment>\
+// 	  ";
+// 	  console.log(dat);
+// 		$.ajax({
+// 		    type     : "POST",
+// 		    url      : "http://track-trace.tk:8080/shipments/calculate",
+// 		    data     : dat,
+// 		    contentType : "application/xml",
+// 		    accepts:"application/json",
+// 		    success  : function(msg) {
+// 			    console.log(msg);
+// 			    var total = Number(msg.split("<total_cost>")[1].split("</total_cost>")[0]);
+// 		    	$("#deliveryfee").text(total);
+// 				$("#deliverytotal").text(amount + total);
+// 		    }
+// 		});
 		var total = 0;
 		if(weight < 1000)
 			total += 20;
