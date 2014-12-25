@@ -40,7 +40,7 @@
 
 	function get() {
 		$.ajax({
-	        url: 'http://localhost:11111/orders/' + $("#id").val(),
+	        url: 'http://128.199.145.53:11111/orders/' + $("#id").val(),
 	        async: false,
 	        type: "GET"
 	    }).done(function(s) {
